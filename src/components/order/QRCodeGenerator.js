@@ -43,12 +43,14 @@ function QRCodeGenerator() {
         receivedOrderProductDetails,
       };
 
-      await axios.post(`${baseURL}/api/order/received`, requestBody);
+      const res = await axios.post(`${baseURL}/api/order/received`, requestBody);
+      console.log(res);
 
       toast.success("Successfully Received Order and Pay the payment");
       toast.success("Payment Successfully");
     } catch (error) {
       console.log(error);
+      toast.error("I think yoy upload wrond QR code.");
     }
   };
 
@@ -76,21 +78,23 @@ function QRCodeGenerator() {
           if (qrCode && qrCode.data) {
             const receivedOrderDetails = JSON.parse(qrCode.data);
             console.log("receivedOrderDetails: ",receivedOrderDetails);
-            // if (
-            //   receivedOrderDetails.orderNo &&
-            //   receivedOrderDetails.receivedProducts
-            // ) {
-            //   handleReceivedOrder(
-            //     receivedOrderDetails.orderNo,
-            //     receivedOrderDetails.receivedProducts
-            //   );
-            // }else{
-            //   toast.error("Recorded data is wrong.");
-            // }
+            if (
+              receivedOrderDetails.orderNo &&
+              receivedOrderDetails.receivedProducts
+            ) {
+              handleReceivedOrder(
+                receivedOrderDetails.orderNo,
+                receivedOrderDetails.receivedProducts
+              );
+            }else{
+              toast.error("Recorded data is wrong.");
+            }
           } else {
+            toast.error("No QR code found in the uploaded image.");
             console.error("No QR code found in the uploaded image.");
           }
         } catch (error) {
+          toast.error("Error parsing QR code data");
           console.error("Error parsing QR code data:", error);
           // Handle parsing error here, such as displaying an error message to the user
         }

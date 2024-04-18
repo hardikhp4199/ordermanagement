@@ -165,8 +165,8 @@ const ProductForm = () => {
                 </tr>
                 <tr>
                   <th>Name</th>
-                  <th>Price</th>
                   <th>Quantity</th>
+                  <th>Selling Price</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -174,8 +174,13 @@ const ProductForm = () => {
                 {filteredProducts.map((product) => (
                   <tr key={product[0]}>
                     <td>{product[1]}</td>
-                    <td>{product[2]}</td>
                     <td>{product[3]}</td>
+                    <td>{new Intl.NumberFormat('en-US', {
+                          style: 'currency',
+                          currency: 'INR',
+                          maximumFractionDigits: 2,
+                        }).format(product[2])}
+                    </td>
                     <td>
                       <button
                         className="btn btn-primary btn-sm"

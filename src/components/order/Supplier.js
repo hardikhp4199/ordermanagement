@@ -225,6 +225,7 @@ const AddBankDetailsForm = () => {
                   <th>Bank Name</th>
                   <th>Bank Account Number</th>
                   <th>Bank IFSC Code</th>
+                  <th>Bank Amount</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -236,6 +237,11 @@ const AddBankDetailsForm = () => {
                     <td>{supplier[3][0]}</td>
                     <td>{supplier[3][1]}</td>
                     <td>{supplier[3][2]}</td>
+                    <td>{new Intl.NumberFormat('en-US', {
+                          style: 'currency',
+                          currency: 'INR',
+                          maximumFractionDigits: 2,
+                        }).format(supplier[3][3])}</td>
                     <td>
                       <button
                         className="btn btn-primary btn-sm"

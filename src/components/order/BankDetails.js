@@ -159,7 +159,12 @@ const BankDetails = () => {
                   <tr key={bank[0]}>
                     <td>{bank[1]}</td>
                     <td>{bank[2]}</td>
-                    <td>{bank[3]}</td>
+                    <td>{new Intl.NumberFormat('en-US', {
+                          style: 'currency',
+                          currency: 'INR',
+                          maximumFractionDigits: 2,
+                        }).format(bank[3])}
+                    </td>
                     <td>
                       <button className="btn btn-primary btn-sm" onClick={() => selectBankForEdit(bank)}><FontAwesomeIcon icon={faEdit} /></button>
                       {/* <button className="btn btn-danger btn-sm mx-2" onClick={() => handleDeleteBank(bank[0])}><FontAwesomeIcon icon={faTrashAlt} /></button> */}

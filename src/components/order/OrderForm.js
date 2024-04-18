@@ -76,24 +76,7 @@ const OrderDetails = () => {
     }
   };
 
-  // const fetchOrderNumbers = async () => {
-  //   try {
-  //     const response = await axios.get(`${baseURL}/api/order/details`);
-  //     const orderDetails = response.data.data;
-      
-  //     const productNamesArray = await Promise.all(orderDetails.map(async (order) => {
-  //       const productNames = await Promise.all(order.productIds.map(async (productId) => {
-  //         const productName = await fetchProductName(productId);
-  //         return productName;
-  //       }));
-  //       return productNames;
-  //     }));
-  
-  //     console.log(productNamesArray);
-  //   } catch (error) {
-  //     toast.error("Error fetching products:", error);
-  //   }
-  // };
+
   
   // Function to fetch product name by ID
   const fetchProductName = async (productId) => {
@@ -157,6 +140,7 @@ const OrderDetails = () => {
   const validateForm = () => {
     if (!selectedSupplierId.trim()) {
       toast.error("Please select supplier");
+      setSelectedProducts([]);
       return false;
     }
 
@@ -176,6 +160,7 @@ const OrderDetails = () => {
     e.preventDefault();
     try {
       if (!validateForm()) {
+        setSelectedProducts([]);
         return;
       }
       let supplierId = selectedSupplierId;
@@ -193,6 +178,9 @@ const OrderDetails = () => {
       toast.error(error.message);
     } finally {
       // Clear selected products and quantities after placing order
+      setSelectedProducts([]);
+      setProductQuantities({});
+      fetchOrderNumbers();
       setSelectedProducts([]);
       setProductQuantities({});
       fetchOrderNumbers();
@@ -215,8 +203,8 @@ const OrderDetails = () => {
 
   // Function to handle click on "View Order Details" button
   const handleViewOrderDetails = (order) => {
-    setSelectedOrder(order); // Set the selected order
-    setShowOrderDetailsModal(true); // Show the modal
+    setSelectedOrder(order);
+    setShowOrderDetailsModal(true);
   };
 
   const handleGenerateQRCode = (order) => {
@@ -227,8 +215,8 @@ const OrderDetails = () => {
     const receivedProducts = productIds.map((productId, index) => ({
       productId: parseInt(productId),
       productQtyOrder: parseInt(productQtys[index]),
-      productQtyReceived: parseInt(productQtys[index]), // Assuming initially all quantities are received
-      productPrice: 20 // Assuming a fixed product price
+      productQtyReceived: parseInt(productQtys[index]),
+      productPrice: 20 
     }));
     
     // Forming the desired structure
@@ -370,7 +358,7 @@ const OrderDetails = () => {
                           <th>Order No</th>
                           <th>Order Date</th>
                           <th>Status</th>
-                          <th>Supplier ID</th>
+                          <th>Supplier Name</th>
                           <th>Actions</th>
                         </tr>
                       </thead>
@@ -383,12 +371,14 @@ const OrderDetails = () => {
                               {order.orderStatus === "placed" ? (
                                 <Badge className="bg-warning">Placed</Badge>
                               ) : order.orderStatus === "received" ? (
-                                <Badge className="bg-success">Received</Badge>
+                                <Badge className="bg-primary">Received</Badge>
+                              ) : order.orderStatus === "paid" ? (
+                                <Badge className="bg-success">Completed</Badge>
                               ) : (
                                 <>{order.orderStatus}</>
                               )}
                             </td>
-                            <td>{order.supplierId}</td>
+                            <td>{order.supplierName}</td>
                             <td>
                               <button
                                 className="btn btn-primary btn-sm"
@@ -396,18 +386,17 @@ const OrderDetails = () => {
                               >
                                 <FontAwesomeIcon icon={faEye} />
                                 <span className="ml-2">View Order Details</span>
-                              </button>
+                              </button><br/>
                               <button
-                                className="btn btn-warning btn-sm ml-2"
+                                className="mt-4 btn btn-warning btn-sm ml-2"
                                 onClick={() => handleGenerateQRCode(order)}
                               >
                                 <FontAwesomeIcon icon={faEye} />
-                                <span className="ml-2">Generate QR Code</span>
+                                <span className="ml-2">Generate Order Data</span>
                               </button>
                               <br/>
-                              {qrData && <QRCode value={qrData} />}
-                              <br />
-                              <hr />
+                              {/* <{qrData && <QRCode value={qrData} />}> */}
+                              { qrData &&  <div>{JSON.stringify(qrData)}</div>}
                               <br />
                             </td>
                           </tr>
@@ -442,11 +431,21 @@ const OrderDetails = () => {
             </tr>
             <tr>
               <td><strong>Status:</strong></td>
-              <td>{selectedOrder.orderStatus}</td>
+              <td>
+                  {selectedOrder.orderStatus === "placed" ? (
+                    <Badge className="bg-warning">Placed</Badge>
+                  ) : selectedOrder.orderStatus === "received" ? (
+                    <Badge className="bg-primary">Received</Badge>
+                  ) : selectedOrder.orderStatus === "paid" ? (
+                    <Badge className="bg-success">Completed</Badge>
+                  ) : (
+                    <>{selectedOrder.orderStatus}</>
+                  )}
+              </td>
             </tr>
             <tr>
-              <td><strong>Supplier ID:</strong></td>
-              <td>{selectedOrder.supplierId}</td>
+              <td><strong>Supplier Name:</strong></td>
+              <td>{selectedOrder.supplierName}</td>
             </tr>
             <tr>
               <td><strong>Products:</strong></td>
@@ -461,7 +460,7 @@ const OrderDetails = () => {
                   <tbody>
                     {selectedOrder.productIds.map((productId, index) => (
                       <tr key={productId}>
-                        <td>{productId}</td>
+                        <td>{selectedOrder.productNames[index]}</td>
                         <td>{selectedOrder.productQtys[index]}</td>
                       </tr>
                     ))}

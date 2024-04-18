@@ -1,6 +1,4 @@
-// App.js
-
-import React from "react";
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -10,13 +8,22 @@ import OrderForm from "./components/order/OrderForm";
 import Supplier from "./components/order/Supplier";
 import HomeComponent from "./components/order/Home";
 import QRCodeGenerator from "./components/order/QRCodeGenerator";
+import Login from"./components/order/LoginComponent";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import 'bootstrap/dist/js/bootstrap.bundle.min';
+import useToken from '../src/useToken';
 
 const App = () => {
+  const { token, setToken } = useToken();
+  
+  if(!token) {
+    return <Login setToken={setToken} />
+  }
+  
   const logoSrc = process.env.PUBLIC_URL + "/logo.png";
+
   return (
     <Router>
       <ToastContainer position="top-right" />
